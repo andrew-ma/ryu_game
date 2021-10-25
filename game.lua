@@ -276,6 +276,171 @@ function scene:create(event)
     radioButtonGroup:insert(highRadioLabel);
     highRadioLabel.anchorX = 0;
     highRadioLabel.anchorY = 0;
+
+    -- -- 2 Normal Buttons
+    local attackButtonGroup = display.newGroup();
+    attackButtonGroup.anchorX = 0;
+    attackButtonGroup.anchorY = 0;
+    attackButtonGroup.anchorChildren = true;
+    attackButtonGroup.x = 200;
+    attackButtonGroup.y = 180;
+
+    -- Event listener for pressing Kick Button
+    local function onClickKickButton(event)
+        local phase = event.phase;
+        if (phase == "began") then
+            if (lowSelected) then
+                -- Do a low kick
+                ryuSprite:lm_kick();
+            else
+                -- Do a high kick
+                ryuSprite:h_kick();
+            end
+        end
+    end
+
+    local kickButton = widget.newButton({
+        label = "Kick",
+        onEvent = onClickKickButton,
+        emboss = false,
+        -- Properties for a rounded rectangle button
+        shape = "roundedRect",
+        width = 80,
+        height = 30,
+        cornerRadius = 10,
+        fillColor = {
+            default = {0.35, 0.62, 0.81},
+            over = {0.35, 0.62, 0.81}
+        },
+        labelColor = {
+            default = {1, 1, 1},
+            over = {1, 1, 1}
+        }
+    });
+    attackButtonGroup:insert(kickButton);
+    kickButton.anchorX = 0;
+    kickButton.anchorY = 0;
+
+    -- Event listener for pressing punch button
+    local function onClickPunchButton(event)
+        local phase = event.phase;
+        if (phase == "began") then
+            if (lowSelected) then
+                -- Do a low punch
+                ryuSprite:l_punch();
+            else
+                -- Do a high punch
+                ryuSprite:mh_punch();
+            end
+        end
+    end
+
+    local punchButton = widget.newButton({
+        label = "Punch",
+        onEvent = onClickPunchButton,
+        emboss = false,
+        -- Properties for a rounded rectangle button
+        shape = "roundedRect",
+        width = 80,
+        height = 30,
+        cornerRadius = 10,
+        fillColor = {
+            default = {0.73, 0, 0},
+            over = {0.73, 0, 0}
+        },
+        labelColor = {
+            default = {1, 1, 1},
+            over = {1, 1, 1}
+        }
+    });
+    attackButtonGroup:insert(punchButton);
+    punchButton.anchorX = 0;
+    punchButton.anchorY = 0;
+    punchButton.x = kickButton.x + 120;
+
+    -- -- 3 Sliders
+    local sliderGroup = display.newGroup();
+    sliderGroup.anchorChildren = true;
+    sliderGroup.anchorX = 0;
+    sliderGroup.anchorY = 0;
+    sliderGroup.x = 200;
+    sliderGroup.y = attackButtonGroup.y + 30;
+
+    -- Change the scale of the sprite
+    local lastScaleValue = 1;
+    local function onSlideSize(event)
+        local phase = event.phase;
+
+        if (phase == "moved") then
+            -- sliderValue goes from 0 to 100
+            local sliderValue = event.value;
+            -- scaleValue is from 1 to 30
+            local scaleValue = math.floor((sliderValue / 100) * 29 + 1);
+
+            -- only make the scale change when there is an integer increment
+            if (scaleValue ~= lastScaleValue) then
+                -- ryuSprite:scale(scaleValue, scaleValue);
+                ryuSprite.xScale = scaleValue;
+                ryuSprite.yScale = scaleValue;
+
+                lastScaleValue = scaleValue;
+            end
+        end
+
+    end
+
+    local sizeSlider = widget.newSlider({
+        id = "sizeSlider",
+        x = display.contentCenterX,
+        y = display.contentCenterY,
+        width = 200,
+        value = 0,
+        listener = onSlideSize
+    });
+    sliderGroup:insert(sizeSlider);
+    sizeSlider.anchorX = 0;
+    sizeSlider.anchorY = 0;
+
+    -- Move Ryu horizontally using slider
+    local function onSlideHorizontalMovement(event)
+        local sliderValue = event.value;
+
+        -- Play the walking animation when sliding the Horizontal Movement slider
+        playSequence(ryuSprite, "walking");
+
+        -- Keep Ryu on the screen, so don't move him to 0
+        ryuSprite.x = (sliderValue / 100) * (display.contentWidth - ryuSprite.width * ryuSprite.xScale);
+    end
+
+    local hMoveSlider = widget.newSlider({
+        id = "hMoveSlider",
+        x = display.contentCenterX,
+        y = display.contentCenterY,
+        width = 200,
+        value = 0,
+        listener = onSlideHorizontalMovement
+    });
+    sliderGroup:insert(hMoveSlider);
+    hMoveSlider.anchorX = 0;
+    hMoveSlider.anchorY = 0;
+    hMoveSlider.y = sizeSlider.y + 30;
+
+    -- Move Ryu horizontally using slider
+    local function onSlideRotate(event)
+        local phase = event.phase;
+
+        if (phase == "moved") then
+            -- 0 to 100
+            local sliderValue = event.value;
+
+            -- rotateValueInDegress from 0 to 360
+            local rotateValueInDegrees = (sliderValue / 100) * 360;
+
+            -- set rotation in degrees, different from sprite:rotate()
+            ryuSprite.rotation = rotateValueInDegrees;
+        end
+    end
+
 end
 
 scene:addEventListener("create", scene);
