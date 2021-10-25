@@ -425,7 +425,7 @@ function scene:create(event)
     hMoveSlider.anchorY = 0;
     hMoveSlider.y = sizeSlider.y + 30;
 
-    -- Move Ryu horizontally using slider
+    -- Rotate Ryu from 0 deg to 360 deg using slider
     local function onSlideRotate(event)
         local phase = event.phase;
 
