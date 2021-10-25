@@ -425,7 +425,7 @@ function scene:create(event)
     hMoveSlider.anchorY = 0;
     hMoveSlider.y = sizeSlider.y + 30;
 
-    -- Move Ryu horizontally using slider
+    -- Rotate Ryu from 0 deg to 360 deg using slider
     local function onSlideRotate(event)
         local phase = event.phase;
 
@@ -441,6 +441,67 @@ function scene:create(event)
         end
     end
 
+    local rotateSlider = widget.newSlider({
+        id = "rotateSlider",
+        x = display.contentCenterX,
+        y = display.contentCenterY,
+        width = 200,
+        value = 0,
+        listener = onSlideRotate
+    });
+    sliderGroup:insert(rotateSlider);
+    rotateSlider.anchorX = 0;
+    rotateSlider.anchorY = 0;
+    rotateSlider.y = hMoveSlider.y + 30;
+
+    local sliderLabelGroup = display.newGroup();
+    sliderLabelGroup.anchorX = 0;
+    sliderLabelGroup.anchorY = 0;
+    sliderLabelGroup.anchorChildren = true;
+    sliderLabelGroup.x = sliderGroup.x - 50;
+    sliderLabelGroup.y = sliderGroup.y + 15;
+
+    local sizeSliderLabel = display.newText({
+        text = "Size",
+        x = -20,
+        y = 40,
+        width = 40,
+        font = native.systemFont,
+        fontSize = 12,
+        align = "left"
+    });
+    sliderLabelGroup:insert(sizeSliderLabel);
+
+    sizeSliderLabel.anchorX = 0;
+    sizeSliderLabel.anchorY = 0;
+
+    local hMoveSliderLabel = display.newText({
+        text = "H. Move",
+        x = -20,
+        y = sizeSliderLabel.y + 30,
+        width = 60,
+        font = native.systemFont,
+        fontSize = 12,
+        align = "left"
+    });
+    sliderLabelGroup:insert(hMoveSliderLabel);
+
+    hMoveSliderLabel.anchorX = 0;
+    hMoveSliderLabel.anchorY = 0;
+
+    local rotateSliderLabel = display.newText({
+        text = "Rotate",
+        x = -20,
+        y = hMoveSliderLabel.y + 30,
+        width = 60,
+        font = native.systemFont,
+        fontSize = 12,
+        align = "left"
+    });
+    sliderLabelGroup:insert(rotateSliderLabel);
+
+    rotateSliderLabel.anchorX = 0;
+    rotateSliderLabel.anchorY = 0;
 end
 
 scene:addEventListener("create", scene);
