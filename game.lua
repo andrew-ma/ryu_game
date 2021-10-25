@@ -358,6 +358,49 @@ function scene:create(event)
     punchButton.anchorY = 0;
     punchButton.x = kickButton.x + 120;
 
+    -- -- 3 Sliders
+    local sliderGroup = display.newGroup();
+    sliderGroup.anchorChildren = true;
+    sliderGroup.anchorX = 0;
+    sliderGroup.anchorY = 0;
+    sliderGroup.x = 200;
+    sliderGroup.y = attackButtonGroup.y + 30;
+
+    -- Change the scale of the sprite
+    local lastScaleValue = 1;
+    local function onSlideSize(event)
+        local phase = event.phase;
+
+        if (phase == "moved") then
+            -- sliderValue goes from 0 to 100
+            local sliderValue = event.value;
+            -- scaleValue is from 1 to 30
+            local scaleValue = math.floor((sliderValue / 100) * 29 + 1);
+
+            -- only make the scale change when there is an integer increment
+            if (scaleValue ~= lastScaleValue) then
+                -- ryuSprite:scale(scaleValue, scaleValue);
+                ryuSprite.xScale = scaleValue;
+                ryuSprite.yScale = scaleValue;
+
+                lastScaleValue = scaleValue;
+            end
+        end
+
+    end
+
+    local sizeSlider = widget.newSlider({
+        id = "sizeSlider",
+        x = display.contentCenterX,
+        y = display.contentCenterY,
+        width = 200,
+        value = 0,
+        listener = onSlideSize
+    });
+    sliderGroup:insert(sizeSlider);
+    sizeSlider.anchorX = 0;
+    sizeSlider.anchorY = 0;
+
 end
 
 scene:addEventListener("create", scene);
