@@ -401,6 +401,46 @@ function scene:create(event)
     sizeSlider.anchorX = 0;
     sizeSlider.anchorY = 0;
 
+    -- Move Ryu horizontally using slider
+    local function onSlideHorizontalMovement(event)
+        local sliderValue = event.value;
+
+        -- Play the walking animation when sliding the Horizontal Movement slider
+        playSequence(ryuSprite, "walking");
+
+        -- Keep Ryu on the screen, so don't move him to 0
+        ryuSprite.x = (sliderValue / 100) * (display.contentWidth - ryuSprite.width * ryuSprite.xScale);
+    end
+
+    local hMoveSlider = widget.newSlider({
+        id = "hMoveSlider",
+        x = display.contentCenterX,
+        y = display.contentCenterY,
+        width = 200,
+        value = 0,
+        listener = onSlideHorizontalMovement
+    });
+    sliderGroup:insert(hMoveSlider);
+    hMoveSlider.anchorX = 0;
+    hMoveSlider.anchorY = 0;
+    hMoveSlider.y = sizeSlider.y + 30;
+
+    -- Move Ryu horizontally using slider
+    local function onSlideRotate(event)
+        local phase = event.phase;
+
+        if (phase == "moved") then
+            -- 0 to 100
+            local sliderValue = event.value;
+
+            -- rotateValueInDegress from 0 to 360
+            local rotateValueInDegrees = (sliderValue / 100) * 360;
+
+            -- set rotation in degrees, different from sprite:rotate()
+            ryuSprite.rotation = rotateValueInDegrees;
+        end
+    end
+
 end
 
 scene:addEventListener("create", scene);
