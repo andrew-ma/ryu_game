@@ -12,6 +12,10 @@ function scene:create(event)
     local sceneGroup = self.view;
     local params = event.params;
 
+    -- Load Sound Effects
+    local kickSound = audio.loadSound("kick.mp3");
+    local punchSound = audio.loadSound("punch.mp3");
+
     -- Load Background Image
     local backgroundImage = display.newImageRect(sceneGroup, "background.jpg", system.ResourceDirectory,
         display.contentWidth, display.contentHeight);
@@ -195,6 +199,61 @@ function scene:create(event)
     ryuSprite.anchorY = 1;
     -- Initial scale is 1
     ryuSprite:scale(1, 1);
+
+    -- Helper function for playing animation and the sound effect
+    -- And only plays new animation when last one finishes, to protect against button smashing
+    local function playSequence(self, sequenceName)
+        if (self.isPlaying and self.sequence == sequenceName) then
+            -- Don't restart animation if it is already playing this sequence
+        else
+            self:setSequence(sequenceName);
+            self:play();
+
+            if (sequenceName == "lm_kick" or sequenceName == "h_kick") then
+                -- play kick sound effect for these kick sequences
+                audio.play(kickSound);
+                -- play punch sound effect for these punch sequences
+            elseif (sequenceName == "l_punch" or sequenceName == "mh_punch") then
+                audio.play(punchSound);
+            end
+        end
+    end
+
+    -- Attach methods to ryuSprite for easy function calling
+    ryuSprite.idle = function(self)
+        playSequence(self, "idle");
+    end
+
+    ryuSprite.walking = function(self)
+        playSequence(self, "walking");
+    end
+
+    ryuSprite.l_punch = function(self)
+        playSequence(self, "l_punch");
+    end
+
+    ryuSprite.mh_punch = function(self)
+        playSequence(self, "mh_punch");
+    end
+
+    ryuSprite.lm_kick = function(self)
+        playSequence(self, "lm_kick");
+    end
+
+    ryuSprite.h_kick = function(self)
+        playSequence(self, "h_kick");
+    end
+
+    -- Automatically play the 'idle' animation when any other animation finishes
+    ryuSprite:addEventListener("sprite", function(event)
+        local phase = event.phase;
+        if (phase == "ended") then
+            ryuSprite:idle();
+        end
+    end)
+
+    -- Playing 'idle' animation initially
+    ryuSprite:idle();
 
     -- 2 Radio Buttons
     local radioButtonGroup = display.newGroup();
@@ -502,6 +561,7 @@ function scene:create(event)
 
     rotateSliderLabel.anchorX = 0;
     rotateSliderLabel.anchorY = 0;
+
 end
 
 function scene:show(event)
