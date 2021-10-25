@@ -441,6 +441,25 @@ function scene:create(event)
         end
     end
 
+    local rotateSlider = widget.newSlider({
+        id = "rotateSlider",
+        x = display.contentCenterX,
+        y = display.contentCenterY,
+        width = 200,
+        value = 0,
+        listener = onSlideRotate
+    });
+    sliderGroup:insert(rotateSlider);
+    rotateSlider.anchorX = 0;
+    rotateSlider.anchorY = 0;
+    rotateSlider.y = hMoveSlider.y + 30;
+
+    local sliderLabelGroup = display.newGroup();
+    sliderLabelGroup.anchorX = 0;
+    sliderLabelGroup.anchorY = 0;
+    sliderLabelGroup.anchorChildren = true;
+    sliderLabelGroup.x = sliderGroup.x - 50;
+    sliderLabelGroup.y = sliderGroup.y + 15;
 end
 
 scene:addEventListener("create", scene);
