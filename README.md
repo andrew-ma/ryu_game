@@ -2,6 +2,8 @@
 
 * Build with Solar2D (Lua)
 
+![Animation GIF](https://github.com/andrew-ma/ryu_game/blob/main/Animation.gif?raw=true)
+
 To generate the spritesheet atlas automatically (since I was only provided the spritesheet)
 * First, photo edit and delete all the text labels that are not the frames
 * Then upload the photo to Leshy Spritesheet Tool (https://www.leshylabs.com/apps/sstool/)
