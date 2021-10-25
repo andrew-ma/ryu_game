@@ -231,6 +231,19 @@ function scene:create(event)
     lowRadioButton.x = 10;
     lowRadioButton.y = 13;
 
+    local localRadioLabel = display.newText({
+        text = "Low",
+        x = lowRadioButton.x + 30,
+        y = lowRadioButton.y + 5,
+        width = 128,
+        font = native.systemFont,
+        fontSize = 12,
+        align = "left"
+    });
+    radioButtonGroup:insert(localRadioLabel);
+    localRadioLabel.anchorX = 0;
+    localRadioLabel.anchorY = 0;
+
     local highRadioButton = widget.newSwitch({
         style = "radio",
         id = "highRadioButton",
@@ -245,6 +258,18 @@ function scene:create(event)
     highRadioButton.x = 10;
     highRadioButton.y = 40;
 
+    local highRadioLabel = display.newText({
+        text = "High",
+        x = highRadioButton.x + 30,
+        y = highRadioButton.y + 5,
+        width = 128,
+        font = native.systemFont,
+        fontSize = 12,
+        align = "left"
+    });
+    radioButtonGroup:insert(highRadioLabel);
+    highRadioLabel.anchorX = 0;
+    highRadioLabel.anchorY = 0;
 end
 
 scene:addEventListener("create", scene);
