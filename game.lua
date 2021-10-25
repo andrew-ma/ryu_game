@@ -214,7 +214,13 @@ function scene:create(event)
 
     -- Event listener for pressing either radio button
     local function onRadioButtonPress(event)
-
+        local switch = event.target;
+        print("Switch with ID" .. switch.id .. " is on " .. tostring(switch.isOn));
+        if (switch.id == "lowRadioButton") then
+            lowSelected = true;
+        else
+            lowSelected = false;
+        end
     end
 
     local lowRadioButton = widget.newSwitch({
