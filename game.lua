@@ -12,6 +12,10 @@ function scene:create(event)
     local sceneGroup = self.view;
     local params = event.params;
 
+    -- Load Sound Effects
+    local kickSound = audio.loadSound("kick.mp3");
+    local punchSound = audio.loadSound("punch.mp3");
+
     -- Load Background Image
     local backgroundImage = display.newImageRect(sceneGroup, "background.jpg", system.ResourceDirectory,
         display.contentWidth, display.contentHeight);
@@ -196,6 +200,61 @@ function scene:create(event)
     -- Initial scale is 1
     ryuSprite:scale(1, 1);
 
+    -- Helper function for playing animation and the sound effect
+    -- And only plays new animation when last one finishes, to protect against button smashing
+    local function playSequence(self, sequenceName)
+        if (self.isPlaying and self.sequence == sequenceName) then
+            -- Don't restart animation if it is already playing this sequence
+        else
+            self:setSequence(sequenceName);
+            self:play();
+
+            if (sequenceName == "lm_kick" or sequenceName == "h_kick") then
+                -- play kick sound effect for these kick sequences
+                audio.play(kickSound);
+                -- play punch sound effect for these punch sequences
+            elseif (sequenceName == "l_punch" or sequenceName == "mh_punch") then
+                audio.play(punchSound);
+            end
+        end
+    end
+
+    -- Attach methods to ryuSprite for easy function calling
+    ryuSprite.idle = function(self)
+        playSequence(self, "idle");
+    end
+
+    ryuSprite.walking = function(self)
+        playSequence(self, "walking");
+    end
+
+    ryuSprite.l_punch = function(self)
+        playSequence(self, "l_punch");
+    end
+
+    ryuSprite.mh_punch = function(self)
+        playSequence(self, "mh_punch");
+    end
+
+    ryuSprite.lm_kick = function(self)
+        playSequence(self, "lm_kick");
+    end
+
+    ryuSprite.h_kick = function(self)
+        playSequence(self, "h_kick");
+    end
+
+    -- Automatically play the 'idle' animation when any other animation finishes
+    ryuSprite:addEventListener("sprite", function(event)
+        local phase = event.phase;
+        if (phase == "ended") then
+            ryuSprite:idle();
+        end
+    end)
+
+    -- Playing 'idle' animation initially
+    ryuSprite:idle();
+
     -- 2 Radio Buttons
     local radioButtonGroup = display.newGroup();
     radioButtonGroup.x = 20;
@@ -276,8 +335,260 @@ function scene:create(event)
     radioButtonGroup:insert(highRadioLabel);
     highRadioLabel.anchorX = 0;
     highRadioLabel.anchorY = 0;
+
+    -- -- 2 Normal Buttons
+    local attackButtonGroup = display.newGroup();
+    attackButtonGroup.anchorX = 0;
+    attackButtonGroup.anchorY = 0;
+    attackButtonGroup.anchorChildren = true;
+    attackButtonGroup.x = 200;
+    attackButtonGroup.y = 180;
+
+    -- Event listener for pressing Kick Button
+    local function onClickKickButton(event)
+        local phase = event.phase;
+        if (phase == "began") then
+            if (lowSelected) then
+                -- Do a low kick
+                ryuSprite:lm_kick();
+            else
+                -- Do a high kick
+                ryuSprite:h_kick();
+            end
+        end
+    end
+
+    local kickButton = widget.newButton({
+        label = "Kick",
+        onEvent = onClickKickButton,
+        emboss = false,
+        -- Properties for a rounded rectangle button
+        shape = "roundedRect",
+        width = 80,
+        height = 30,
+        cornerRadius = 10,
+        fillColor = {
+            default = {0.35, 0.62, 0.81},
+            over = {0.35, 0.62, 0.81}
+        },
+        labelColor = {
+            default = {1, 1, 1},
+            over = {1, 1, 1}
+        }
+    });
+    attackButtonGroup:insert(kickButton);
+    kickButton.anchorX = 0;
+    kickButton.anchorY = 0;
+
+    -- Event listener for pressing punch button
+    local function onClickPunchButton(event)
+        local phase = event.phase;
+        if (phase == "began") then
+            if (lowSelected) then
+                -- Do a low punch
+                ryuSprite:l_punch();
+            else
+                -- Do a high punch
+                ryuSprite:mh_punch();
+            end
+        end
+    end
+
+    local punchButton = widget.newButton({
+        label = "Punch",
+        onEvent = onClickPunchButton,
+        emboss = false,
+        -- Properties for a rounded rectangle button
+        shape = "roundedRect",
+        width = 80,
+        height = 30,
+        cornerRadius = 10,
+        fillColor = {
+            default = {0.73, 0, 0},
+            over = {0.73, 0, 0}
+        },
+        labelColor = {
+            default = {1, 1, 1},
+            over = {1, 1, 1}
+        }
+    });
+    attackButtonGroup:insert(punchButton);
+    punchButton.anchorX = 0;
+    punchButton.anchorY = 0;
+    punchButton.x = kickButton.x + 120;
+
+    -- -- 3 Sliders
+    local sliderGroup = display.newGroup();
+    sliderGroup.anchorChildren = true;
+    sliderGroup.anchorX = 0;
+    sliderGroup.anchorY = 0;
+    sliderGroup.x = 200;
+    sliderGroup.y = attackButtonGroup.y + 30;
+
+    -- Change the scale of the sprite
+    local lastScaleValue = 1;
+    local function onSlideSize(event)
+        local phase = event.phase;
+
+        if (phase == "moved") then
+            -- sliderValue goes from 0 to 100
+            local sliderValue = event.value;
+            -- scaleValue is from 1 to 30
+            local scaleValue = math.floor((sliderValue / 100) * 29 + 1);
+
+            -- only make the scale change when there is an integer increment
+            if (scaleValue ~= lastScaleValue) then
+                -- ryuSprite:scale(scaleValue, scaleValue);
+                ryuSprite.xScale = scaleValue;
+                ryuSprite.yScale = scaleValue;
+
+                lastScaleValue = scaleValue;
+            end
+        end
+
+    end
+
+    local sizeSlider = widget.newSlider({
+        id = "sizeSlider",
+        x = display.contentCenterX,
+        y = display.contentCenterY,
+        width = 200,
+        value = 0,
+        listener = onSlideSize
+    });
+    sliderGroup:insert(sizeSlider);
+    sizeSlider.anchorX = 0;
+    sizeSlider.anchorY = 0;
+
+    -- Move Ryu horizontally using slider
+    local function onSlideHorizontalMovement(event)
+        local sliderValue = event.value;
+
+        -- Play the walking animation when sliding the Horizontal Movement slider
+        playSequence(ryuSprite, "walking");
+
+        -- Keep Ryu on the screen, so don't move him to 0
+        ryuSprite.x = (sliderValue / 100) * (display.contentWidth - ryuSprite.width * ryuSprite.xScale);
+    end
+
+    local hMoveSlider = widget.newSlider({
+        id = "hMoveSlider",
+        x = display.contentCenterX,
+        y = display.contentCenterY,
+        width = 200,
+        value = 0,
+        listener = onSlideHorizontalMovement
+    });
+    sliderGroup:insert(hMoveSlider);
+    hMoveSlider.anchorX = 0;
+    hMoveSlider.anchorY = 0;
+    hMoveSlider.y = sizeSlider.y + 30;
+
+    -- Rotate Ryu from 0 deg to 360 deg using slider
+    local function onSlideRotate(event)
+        local phase = event.phase;
+
+        if (phase == "moved") then
+            -- 0 to 100
+            local sliderValue = event.value;
+
+            -- rotateValueInDegress from 0 to 360
+            local rotateValueInDegrees = (sliderValue / 100) * 360;
+
+            -- set rotation in degrees, different from sprite:rotate()
+            ryuSprite.rotation = rotateValueInDegrees;
+        end
+    end
+
+    local rotateSlider = widget.newSlider({
+        id = "rotateSlider",
+        x = display.contentCenterX,
+        y = display.contentCenterY,
+        width = 200,
+        value = 0,
+        listener = onSlideRotate
+    });
+    sliderGroup:insert(rotateSlider);
+    rotateSlider.anchorX = 0;
+    rotateSlider.anchorY = 0;
+    rotateSlider.y = hMoveSlider.y + 30;
+
+    local sliderLabelGroup = display.newGroup();
+    sliderLabelGroup.anchorX = 0;
+    sliderLabelGroup.anchorY = 0;
+    sliderLabelGroup.anchorChildren = true;
+    sliderLabelGroup.x = sliderGroup.x - 50;
+    sliderLabelGroup.y = sliderGroup.y + 15;
+
+    local sizeSliderLabel = display.newText({
+        text = "Size",
+        x = -20,
+        y = 40,
+        width = 40,
+        font = native.systemFont,
+        fontSize = 12,
+        align = "left"
+    });
+    sliderLabelGroup:insert(sizeSliderLabel);
+
+    sizeSliderLabel.anchorX = 0;
+    sizeSliderLabel.anchorY = 0;
+
+    local hMoveSliderLabel = display.newText({
+        text = "H. Move",
+        x = -20,
+        y = sizeSliderLabel.y + 30,
+        width = 60,
+        font = native.systemFont,
+        fontSize = 12,
+        align = "left"
+    });
+    sliderLabelGroup:insert(hMoveSliderLabel);
+
+    hMoveSliderLabel.anchorX = 0;
+    hMoveSliderLabel.anchorY = 0;
+
+    local rotateSliderLabel = display.newText({
+        text = "Rotate",
+        x = -20,
+        y = hMoveSliderLabel.y + 30,
+        width = 60,
+        font = native.systemFont,
+        fontSize = 12,
+        align = "left"
+    });
+    sliderLabelGroup:insert(rotateSliderLabel);
+
+    rotateSliderLabel.anchorX = 0;
+    rotateSliderLabel.anchorY = 0;
+
+end
+
+function scene:show(event)
+    local sceneGroup = self.view;
+    local phase = event.phase;
+
+    if (phase == "will") then
+    elseif (phase == "did") then
+    end
+end
+
+function scene:hide(event)
+    local sceneGroup = self.view;
+    local phase = event.phase;
+
+    if (phase == "will") then
+    elseif (phase == "did") then
+    end
+end
+
+function scene:destroy(event)
+    local sceneGroup = self.view;
 end
 
 scene:addEventListener("create", scene);
+scene:addEventListener("show", scene);
+scene:addEventListener("hide", scene);
+scene:addEventListener("destroy", scene);
 
 return scene;
