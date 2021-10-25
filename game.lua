@@ -460,6 +460,48 @@ function scene:create(event)
     sliderLabelGroup.anchorChildren = true;
     sliderLabelGroup.x = sliderGroup.x - 50;
     sliderLabelGroup.y = sliderGroup.y + 15;
+
+    local sizeSliderLabel = display.newText({
+        text = "Size",
+        x = -20,
+        y = 40,
+        width = 40,
+        font = native.systemFont,
+        fontSize = 12,
+        align = "left"
+    });
+    sliderLabelGroup:insert(sizeSliderLabel);
+
+    sizeSliderLabel.anchorX = 0;
+    sizeSliderLabel.anchorY = 0;
+
+    local hMoveSliderLabel = display.newText({
+        text = "H. Move",
+        x = -20,
+        y = sizeSliderLabel.y + 30,
+        width = 60,
+        font = native.systemFont,
+        fontSize = 12,
+        align = "left"
+    });
+    sliderLabelGroup:insert(hMoveSliderLabel);
+
+    hMoveSliderLabel.anchorX = 0;
+    hMoveSliderLabel.anchorY = 0;
+
+    local rotateSliderLabel = display.newText({
+        text = "Rotate",
+        x = -20,
+        y = hMoveSliderLabel.y + 30,
+        width = 60,
+        font = native.systemFont,
+        fontSize = 12,
+        align = "left"
+    });
+    sliderLabelGroup:insert(rotateSliderLabel);
+
+    rotateSliderLabel.anchorX = 0;
+    rotateSliderLabel.anchorY = 0;
 end
 
 scene:addEventListener("create", scene);
