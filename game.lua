@@ -276,6 +276,88 @@ function scene:create(event)
     radioButtonGroup:insert(highRadioLabel);
     highRadioLabel.anchorX = 0;
     highRadioLabel.anchorY = 0;
+
+    -- -- 2 Normal Buttons
+    local attackButtonGroup = display.newGroup();
+    attackButtonGroup.anchorX = 0;
+    attackButtonGroup.anchorY = 0;
+    attackButtonGroup.anchorChildren = true;
+    attackButtonGroup.x = 200;
+    attackButtonGroup.y = 180;
+
+    -- Event listener for pressing Kick Button
+    local function onClickKickButton(event)
+        local phase = event.phase;
+        if (phase == "began") then
+            if (lowSelected) then
+                -- Do a low kick
+                ryuSprite:lm_kick();
+            else
+                -- Do a high kick
+                ryuSprite:h_kick();
+            end
+        end
+    end
+
+    local kickButton = widget.newButton({
+        label = "Kick",
+        onEvent = onClickKickButton,
+        emboss = false,
+        -- Properties for a rounded rectangle button
+        shape = "roundedRect",
+        width = 80,
+        height = 30,
+        cornerRadius = 10,
+        fillColor = {
+            default = {0.35, 0.62, 0.81},
+            over = {0.35, 0.62, 0.81}
+        },
+        labelColor = {
+            default = {1, 1, 1},
+            over = {1, 1, 1}
+        }
+    });
+    attackButtonGroup:insert(kickButton);
+    kickButton.anchorX = 0;
+    kickButton.anchorY = 0;
+
+    -- Event listener for pressing punch button
+    local function onClickPunchButton(event)
+        local phase = event.phase;
+        if (phase == "began") then
+            if (lowSelected) then
+                -- Do a low punch
+                ryuSprite:l_punch();
+            else
+                -- Do a high punch
+                ryuSprite:mh_punch();
+            end
+        end
+    end
+
+    local punchButton = widget.newButton({
+        label = "Punch",
+        onEvent = onClickPunchButton,
+        emboss = false,
+        -- Properties for a rounded rectangle button
+        shape = "roundedRect",
+        width = 80,
+        height = 30,
+        cornerRadius = 10,
+        fillColor = {
+            default = {0.73, 0, 0},
+            over = {0.73, 0, 0}
+        },
+        labelColor = {
+            default = {1, 1, 1},
+            over = {1, 1, 1}
+        }
+    });
+    attackButtonGroup:insert(punchButton);
+    punchButton.anchorX = 0;
+    punchButton.anchorY = 0;
+    punchButton.x = kickButton.x + 120;
+
 end
 
 scene:addEventListener("create", scene);
